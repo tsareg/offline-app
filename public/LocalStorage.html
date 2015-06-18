@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>My offline web app - LocalStorage</title>
+</head>
+<body>
+    <script>
+        window.addEventListener('storage', function(e) {
+            console.log(e.key + " was changed from " + e.oldValue + " to " + e.newValue
+                    + " in " + (e.storageArea === window.localStorage ? "localStorage" : "sessionStorage")
+                    + " at " + e.url);
+        });
+
+        window.localStorage.setItem('key', 'value');
+        console.log( window.localStorage.getItem('key'));
+        console.log( window.localStorage.key(0));
+        console.log(window.localStorage.length);
+         window.localStorage.removeItem('key');
+        window.localStorage.clear();
+    </script>
+</body>
+</html>

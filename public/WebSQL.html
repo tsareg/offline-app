@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>My offline web app - WebSQL</title>
+</head>
+<body>
+    <script>
+        var db = window.openDatabase("myDatabase", "1.0", "My WebSQL test database", 5*1024*1024);
+
+        if (db) {
+            db.transaction(
+                    function (tx) {
+                        tx.executeSql(
+                                "CREATE TABLE IF NOT EXISTS myTable (id INTEGER PRIMARY KEY AUTOINCREMENT, myField TEXT)",
+                                [],
+                                function (tx, results) {
+                                    console.log('Execute SQL completed');
+                                },
+                                function (err) {
+                                    console.error(err);
+                                }
+                        );
+
+                        tx.executeSql("INSERT INTO myTable(myField) VALUES(?)", ['myValue']);
+                    },
+                    function (err) {
+                        console.error(err);
+                    },
+                    function () {
+                        console.log('Transaction completed');
+                    }
+            );
+
+            db.readTransaction(function (t) {
+                t.executeSql('SELECT * FROM myTable', [], function (tx, results) {
+                    console.log(results);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

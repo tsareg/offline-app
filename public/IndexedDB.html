@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>My offline web app - IndexedDB</title>
+</head>
+<body>
+    <script>
+        var request = window.indexedDB.open("MyTestDatabase", 1);
+
+        request.onerror = function (event) {
+            console.error(event.target.errorCode);
+        };
+
+        request.onupgradeneeded = function (event) {
+            var db = event.target.result,
+                st1 = db.createObjectStore("l1", {keyPath: "myKey"}),
+                st2 = db.createObjectStore("l2", {autoIncrement: true});
+
+            st1.createIndex("nameIndex", "name", {unique: false});
+            st2.createIndex("emailIndex", "email", {unique: true});
+
+            st1.add({"name": "Vasya", "myKey": "someUniqueKey"});
+            st2.add({"name": "Petya"});
+        };
+
+        request.onsuccess = function (event) {
+            var db = event.target.result,
+                tx = db.transaction(["l1", "l2"], "readonly"),
+                store1 = tx.objectStore("l1"),
+                store2 = tx.objectStore("l2"),
+                nameIdx = store1.index("nameIndex");
+
+            store2.get(1).onsuccess = function (event) {
+                console.log(event.target.result);
+            };
+
+            nameIdx.get("Vasya").onsuccess = function (event) {
+                console.log(event.target.result);
+            };
+
+            store1.openCursor().onsuccess = function () {
+                var cursor = this.result;
+
+                if (cursor) {
+                    console.log(cursor.value);
+                    cursor.continue();
+                }
+            }
+        };
+    </script>
+</body>
+</html>

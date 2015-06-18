@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>My offline web app - FileSystem</title>
+</head>
+<body>
+    <script>
+        window.webkitRequestFileSystem(
+            window.TEMPORARY,
+            1024 * 1024,
+            onInitFs,
+            errorHandler
+        );
+
+        function errorHandler() {
+            console.error("Error", arguments);
+        }
+
+        function onInitFs(fs) {
+            fs.root.getFile('log.txt', {create: true}, writeToFile, errorHandler);
+        }
+
+        function writeToFile(fileEntry) {
+            fileEntry.createWriter(function (fileWriter) {
+                var blob = new Blob(['Lorem Ipsum'], {type: 'text/plain'});
+
+                fileWriter.onwriteend = function (e) {
+                    readFromFile(fileEntry);
+                };
+
+                fileWriter.onerror = function (e) {
+                    console.error('Write failed: ' + e.toString());
+                };
+
+                fileWriter.write(blob);
+            }, errorHandler);
+        }
+
+        function readFromFile(fileEntry) {
+            fileEntry.file(function (file) {
+                var reader = new FileReader();
+
+                reader.onloadend = function () {
+                    console.log(this.result);
+                };
+
+                reader.readAsText(file);
+            }, errorHandler);
+        }
+    </script>
+</body>
+</html>

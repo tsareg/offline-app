@@ -1,0 +1,13 @@
+CACHE MANIFEST
+# ver. 15
+
+CACHE:
+/css/styles.css
+/js/main.js
+/images/offline.png
+
+NETWORK:
+*
+
+FALLBACK:
+/ /offline.html

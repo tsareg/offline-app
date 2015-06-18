@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html manifest="offline.appcache">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>My offline web app - ApplicationCache</title>
+    <link href="css/styles.css" rel="stylesheet"/>
+</head>
+<body>
+    <button>Click to load image</button>
+
+    <script src="js/main.js" type="text/javascript"></script>
+    <script>
+        var appCache = window.applicationCache;
+
+        if (appCache) {
+            function onAppCacheEvent(e) {
+                var el = document.createElement("h1");
+
+                if(appCache.status === appCache.UPDATEREADY) {
+                    el.textContent = "You have an update for offline version, click to download";
+                    el.addEventListener("click", function() {
+                        appCache.swapCache();
+
+                        el.textContent = "Application cache swapped";
+                    });
+                } else {
+                    if (e.type === "progress") {
+                        el.textContent = "Downloading files for offline usage... " + e.loaded + " of " + e.total + " loaded.";
+                    } else {
+                        el.innerHTML = "Application cache is <i>" + e.type + "</i>";
+                    }
+                }
+
+                document.body.appendChild(el);
+            }
+
+            document.querySelector("button").addEventListener("click", loadImage);
+
+            appCache.addEventListener("checking", onAppCacheEvent);
+            appCache.addEventListener("downloading", onAppCacheEvent);
+            appCache.addEventListener("progress", onAppCacheEvent);
+            appCache.addEventListener("cached", onAppCacheEvent);
+            appCache.addEventListener("noupdate", onAppCacheEvent);
+            appCache.addEventListener("updateready", onAppCacheEvent);
+            appCache.addEventListener("error", onAppCacheEvent);
+        }
+</script>
+</body>
+</html>
